@@ -1,32 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Case</title>
-  <meta charset="utf-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-</head>
-
-<style>
- 
-  #tweet {
-    width: 600px !important;
-  }
- 
-  #tweet iframe {
-    border: none !important;
-    box-shadow: none !important;
-  }
- 
-</style>
-
-
- 
-<!-- <script sync src="https://platform.twitter.com/widgets.js"></script> -->
-<script>
+  <meta charset="UTF-8">
+  <title>Twitter Near-Real Time Search Demo</title>
+  <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <script src="jquery-1.11.3.min.js"></script>
+  <script src="bootstrap.min.js"></script>
+  <script>
     twttr = (function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0],
           t = window.twttr || {};
@@ -41,55 +22,295 @@
       };
      return t;
     }(document, "script", "twitter-wjs"));
-</script>
-<script>
-  window.onload = (function(){
- 
-    var tweet = document.getElementById("tweet");
-    var id = tweet.getAttribute("tweetID");
- 
-    twttr.widgets.createTweet(id, tweet, {});
-  });
- 
-</script>
-<script>
-function myFunction() {
+  </script>
+  <script>
+      function submitPreference(){
+        var topic = document.getElementById("topic").value;
 
-    var node = document.createElement("div");                 // Create a <li> node
-    node.setAttribute("id", "tweet2");
-    node.setAttribute("tweetID","625771227932549120");
+        topic=topic.split(' ');
+        topic=topic[0];
+        var runtag1 = document.getElementById("runtag1").value;
+        var runtag2 = document.getElementById("runtag2").value;
+        var data = {}
+        data.topic = topic;
+        data.runtag1 = runtag1;
+        data.runtag2 = runtag2;
+        // console.log(data);
 
-    var node2=document.createElement("p");
-    node2.textContent="1438030461";
-    var node3=document.createElement("p");
-    var date = new Date(parseInt("1438030461"+"000"));   
-    var hour = date.getUTCHours();
-    if (hour<12) {
-      hour_p="AM";
+        if($("input[type='radio'].radioBtnClass").is(':checked')) {
+          var preference = $("input[type='radio'].radioBtnClass:checked").val();
+          data.preference=preference;
+          // alert(data);
+        }
+        // console.log(data);
+        $.ajax({
+      type: 'POST',
+      url: 'http://www.sunny-song.com/abtest/search.php',
+      crossDomain: true,
+      data: JSON.stringify(data),
+      dataType: 'json',
+      success: function(responseData, textStatus, jqXHR) {
+        var value = responseData.someKey;
+      },
+      error: function (responseData, textStatus, errorThrown) {
+          alert('POST failed.');
+      }
+      });
+      alert("Thanks!");
+
+
+
+      }
+
+  </script>
+  <script>
+  function openTopic(){
+    var topic = document.getElementById("topic").value;
+    topic=topic.split(' ');
+    topic=topic[0];
+    var left = (screen.width/3);
+    var top = (screen.height/3);
+    return window.open('topics/'+topic+'.html', 'name', 'width=450,height=450,top='+top+', left='+left); 
+
+
+    popupWindow = window.open('index_1125.html','name','width=300,height=300');
+    alert(topic);
+  }
+  function submitQuery(){
+    for (var i = 20; i <= 29;  i++) {
+      $("#"+i+"resultsA").html("")
+      $("#"+i+"resultsB").html("")
     }
-    else {
-      hour_p="PM";
+    var topic = document.getElementById("topic").value;
+    $("#this_is_h1").text(topic);
+    topic=topic.split(' ');
+    topic=topic[0];
+    var runtag1 = document.getElementById("runtag1").value;
+    var runtag2 = document.getElementById("runtag2").value;
+    var data = {}
+    data.topic = topic;
+    data.runtag1 = runtag1;
+    data.runtag2 = runtag2;
+    
+    console.log(data);
+    $.ajax({
+    type: 'POST',
+    url: 'http://www.sunny-song.com/abtest/search.php',
+    crossDomain: true,
+    data: JSON.stringify(data),
+    dataType: 'json',
+    success: function(responseData, textStatus, jqXHR) {
+        var value = responseData.someKey;
+    },
+    error: function (responseData, textStatus, errorThrown) {
+        alert('POST failed.');
     }
-    if (hour>12) {
-      hour=hour-12;
-    }
-    node3.textContent="Pushed time "+hour+":"+date.getUTCMinutes()+" "+hour_p+" - "+date.getUTCDate()+" Jul 2015";  //in milliseconds
-    document.getElementById("20150725").appendChild(node);
-    document.getElementById("20150725").appendChild(node2);
-    document.getElementById("20150725").appendChild(node3);
+}).done(function(data){
+      // alert(data[0].system+data[1].system+data[2].epoch)
+      $.each(data,function(i,item){
+        var epoch=item.epoch;
+        var node3=document.createElement("h6");
+        var date = new Date(parseInt(epoch+"000")); 
+        var day = date.getUTCDate();  
+        var hour = date.getUTCHours();
+        if (hour<12) {
+            hour_p="AM";
+        }
+        else {
+          hour_p="PM";
+        }
+        if (hour>12) {
+          hour=hour-12;
+        }
+        node3.textContent="Pushed time "+hour+":"+("0" + date.getUTCMinutes()).slice(-2)+" "+hour_p+" - "+day+" Jul 2015";  //in milliseconds
+  
+        var node = document.createElement("div");                 // Create a <li> node
+        node.setAttribute("id", day+"results"+item.system+i);
+        
+        document.getElementById(day+"results"+item.system).appendChild(node3);
 
-    twttr.widgets.createTweet(document.getElementById("tweet2").getAttribute("tweetID"), document.getElementById("tweet2"), {});
-}
-</script>
+        document.getElementById(day+"results"+item.system).appendChild(node);
+        
+        twttr.widgets.createTweet(item.docid,document.getElementById(node.id),{});
 
-<body>
+      }
+      );
+    });
+  }
 
-<div class="container">
-  <h2>Dynamic Tabs</h2>
-  <button onclick="myFunction()">Click me</button>
-  <button onclick="myFunction2()">Refresh</button>
-  <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#preference">Preference</a></li>
+  </script>
+</head>
+<body style="height:100%">
+<div class="container" style="height:100%">
+
+  <div class="page-header" style="height:13%">
+    <h4 id="this_is_h1"> </h4>
+      <!-- <input type="text" id="topic_display"></input> -->
+    <form class="form-inline col-sm-8" action="JavaScript:submitQuery()">
+    
+      <div class="form-group">
+        <label>Run A</label>
+        <select class="form-control selectpicker show-tick" name='runtag1' id="runtag1" >
+          <option value="CLIP-A-5.0-0.5">CLIP-A-5.0-0.5</option>
+          <option value="CLIP-A-5.0-0.6">CLIP-A-5.0-0.6</option>
+          <option value="CLIP-A-DYN-0.5">CLIP-A-DYN-0.5</option>
+          <option value="DALTRECAA1">DALTRECAA1</option>
+          <option value="DALTRECMA1">DALTRECMA1</option>
+          <option value="DALTRECMA2">DALTRECMA2</option>
+          <option value="ECNURUNA1">ECNURUNA1</option>
+          <option value="ECNURUNA2">ECNURUNA2</option>
+          <option value="ECNURUNA3">ECNURUNA3</option>
+          <option value="hpclab_pi_algA">hpclab_pi_algA</option>
+          <option value="IRIT-KLTFIDF">IRIT-KLTFIDF</option>
+          <option value="IRIT-RTNotif.33">IRIT-RTNotif.33</option>
+          <option value="IritSigSDA">IritSigSDA</option>
+          <option value="MPII_COMB_SORT">MPII_COMB_SORT</option>
+          <option value="MPII_HYBRID_PW">MPII_HYBRID_PW</option>
+          <option value="MPII_LUC_SORT">MPII_LUC_SORT</option>
+          <option value="PKUICSTRunA1">PKUICSTRunA1</option>
+          <option value="PKUICSTRunA2">PKUICSTRunA2</option>
+          <option value="PKUICSTRunA3">PKUICSTRunA3</option>
+          <option value="prnaTaskA1">prnaTaskA1</option>
+          <option value="prnaTaskA2">prnaTaskA2</option>
+          <option value="prnaTaskA3">prnaTaskA3</option>
+          <option value="QUBaseline">QUBaseline</option>
+          <option value="QUDyn">QUDyn</option>
+          <option value="QUDynExp">QUDynExp</option>
+          <option value="SNACS_LA">SNACS_LA</option>
+          <option value="SNACSA">SNACSA</option>
+          <option value="udelRun1A">udelRun1A</option>
+          <option value="udelRun2A">udelRun2A</option>
+          <option value="udelRun3A">udelRun3A</option>
+          <option value="umd_hcil_run01">umd_hcil_run01</option>
+          <option value="umd_hcil_run02">umd_hcil_run02</option>
+          <option value="UWaterlooATDK">UWaterlooATDK</option>
+          <option value="UWaterlooATEK">UWaterlooATEK</option>
+          <option value="UWaterlooATNDEK">UWaterlooATNDEK</option>
+          <option value="UWCMBP1">UWCMBP1</option>
+          <option value="UWCMBP2">UWCMBP2</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Topic</label>
+        <select class="form-control selectpicker show-tick" name='topic' id="topic" >
+          <option value="MB226 Hershey, PA quilt show">MB226</option>
+          <option value="MB227 Pradaxa side effects">MB227</option>
+          <option value="MB228 Coumadin dietary restrictions">MB228</option>
+          <option value="MB236 California drought agricultural effects">MB236</option>
+          <option value="MB242 Saudi bombing Yemen">MB242</option>
+          <option value="MB243 FIFA corruption investigation">MB243</option>
+          <option value="MB246 Greek international debt crisis">MB246</option>
+          <option value="MB248 Harlem 5K race">MB248</option>
+          <option value="MB249 Johns Hopkins Lyme disease study">MB249</option>
+          <option value="MB253 health insurance for disabled children">MB253</option>
+          <option value="MB254 cancer and depression">MB254</option>
+          <option value="MB255 medical insurance on cruises">MB255</option>
+          <option value="MB260 Society for Women and the Civil War Conference">MB260</option>
+          <option value="MB262 Stephen Colbert Late Show">MB262</option>
+          <option value="MB265 cruise ship mishaps">MB265</option>
+          <option value="MB267 fighting between Ukraine and pro-Russian rebels">MB267</option>
+          <option value="MB278 Mr. Holmes movie">MB278</option>
+          <option value="MB284 coping with identity theft">MB284</option>
+          <option value="MB287 The Vatican Tapes movie">MB287</option>
+          <option value="MB298 Gaza rockets hit Israel">MB298</option>
+          <option value="MB305 National Museum of American History">MB305</option>
+          <option value="MB324 Indian-Pacific train">MB324</option>
+          <option value="MB326 wheelchair accessibility">MB326</option>
+          <option value="MB331 Special Olympics 2015">MB331</option>
+          <option value="MB339 Chincoteague Pony Swim">MB339</option>
+          <option value="MB344 Iran nuclear agreement">MB344</option>
+          <option value="MB348 drones vs. commercial airliners">MB348</option>
+          <option value="MB353 summer Seasonal Affective Disorder (SAD)">MB353</option>
+          <option value="MB354 Go Set a Watchman">MB354</option>
+          <option value="MB357 prevalence of Ritalin use with no ADHD diagnosis">MB357</option>
+          <option value="MB359 Grey book">MB359</option>
+          <option value="MB362 Outback Steakhouse">MB362</option>
+          <option value="MB366 climbing Mount Everest">MB366</option>
+          <option value="MB371 self-driving cars">MB371</option>
+          <option value="MB377 animal attacks in safari parks">MB377</option>
+          <option value="MB379 morel mushrooms">MB379</option>
+          <option value="MB383 online dating for older women">MB383</option>
+          <option value="MB384 arson fires in inner cities">MB384</option>
+          <option value="MB389 Clinton Foundation">MB389</option>
+          <option value="MB391 polar icecap melting">MB391</option>
+          <option value="MB392 U.S. forest fires">MB392</option>
+          <option value="MB400 probiotics">MB400</option>
+          <option value="MB401 Knock Knock Live">MB401</option>
+          <option value="MB405 Rotterdam Unlimited">MB405</option>
+          <option value="MB409 airport TSA screenings">MB409</option>
+          <option value="MB416 Hepworth Exhibit at the Tate Britain">MB416</option>
+          <option value="MB419 King George Weekend Ascot">MB419</option>
+          <option value="MB432 Mount Rushmore">MB432</option>
+          <option value="MB434 2015 Summer PanAm Games">MB434</option>
+          <option value="MB439 Bolton Wanderers">MB439</option>
+          <option value="MB448 Bouchercon World Mystery Convention">MB448</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Run B</label>
+        <select class="form-control selectpicker show-tick" name='runtag2' id="runtag2" >
+          <option value="CLIP-A-5.0-0.5">CLIP-A-5.0-0.5</option>
+          <option value="CLIP-A-5.0-0.6">CLIP-A-5.0-0.6</option>
+          <option value="CLIP-A-DYN-0.5">CLIP-A-DYN-0.5</option>
+          <option value="DALTRECAA1">DALTRECAA1</option>
+          <option value="DALTRECMA1">DALTRECMA1</option>
+          <option value="DALTRECMA2">DALTRECMA2</option>
+          <option value="ECNURUNA1">ECNURUNA1</option>
+          <option value="ECNURUNA2">ECNURUNA2</option>
+          <option value="ECNURUNA3">ECNURUNA3</option>
+          <option value="hpclab_pi_algA">hpclab_pi_algA</option>
+          <option value="IRIT-KLTFIDF">IRIT-KLTFIDF</option>
+          <option value="IRIT-RTNotif.33">IRIT-RTNotif.33</option>
+          <option value="IritSigSDA">IritSigSDA</option>
+          <option value="MPII_COMB_SORT">MPII_COMB_SORT</option>
+          <option value="MPII_HYBRID_PW">MPII_HYBRID_PW</option>
+          <option value="MPII_LUC_SORT">MPII_LUC_SORT</option>
+          <option value="PKUICSTRunA1">PKUICSTRunA1</option>
+          <option value="PKUICSTRunA2">PKUICSTRunA2</option>
+          <option value="PKUICSTRunA3">PKUICSTRunA3</option>
+          <option value="prnaTaskA1">prnaTaskA1</option>
+          <option value="prnaTaskA2">prnaTaskA2</option>
+          <option value="prnaTaskA3">prnaTaskA3</option>
+          <option value="QUBaseline">QUBaseline</option>
+          <option value="QUDyn">QUDyn</option>
+          <option value="QUDynExp">QUDynExp</option>
+          <option value="SNACS_LA">SNACS_LA</option>
+          <option value="SNACSA">SNACSA</option>
+          <option value="udelRun1A">udelRun1A</option>
+          <option value="udelRun2A">udelRun2A</option>
+          <option value="udelRun3A">udelRun3A</option>
+          <option value="umd_hcil_run01">umd_hcil_run01</option>
+          <option value="umd_hcil_run02">umd_hcil_run02</option>
+          <option value="UWaterlooATDK">UWaterlooATDK</option>
+          <option value="UWaterlooATEK">UWaterlooATEK</option>
+          <option value="UWaterlooATNDEK">UWaterlooATNDEK</option>
+          <option value="UWCMBP1">UWCMBP1</option>
+          <option value="UWCMBP2">UWCMBP2</option>
+        </select>
+      </div>      
+      <input type="submit" class="btn btn-success" value="Run" />
+      <a class="btn btn-info" type="button" href ="javascript:openTopic()" target="popup">Topic Spec</a>
+    </form>
+    <form class="form-inline col-sm-4" action="JavaScript:submitPreference()">
+      Better one?&nbsp;
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="A">A
+      </label>
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="neither">Neither
+      </label>
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="B">B
+      </label>
+      &nbsp;
+      
+      <input type="submit" class="btn btn-primary" value="Submit" />
+    </form>
+
+  </div>
+ 
+ <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#description">Description</a></li>
     <li><a data-toggle="tab" href="#20150720">July 20</a></li>
     <li><a data-toggle="tab" href="#20150721">July 21</a></li>
     <li><a data-toggle="tab" href="#20150722">July 22</a></li>
@@ -104,49 +325,118 @@ function myFunction() {
   </ul>
   <div class="tab-content">
 
-    <div id="preference" class="tab-pane">
-      <h3>HOME</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div id="description" class="tab-pane fade in active">
+      <h4>README</h4>
+      <p>In order to allow embeded tweets display the correct UTC/GMT time (due to API limitation), please ensure System Preferences -> Date and Time setting as follows:</p>
+      <p>Timezone: Greenwich Mean Time </p>
+      <p>Closest City: Jamestown - St. Helena (IMPORTANT). </p>
+      <p>(Some other GMT places in the northern hemisphere may still not work, as Daylight Saving Time causes problem)</p>
     </div>
-    <div id="20150720" class="tab-pane fade" onclick="myFunction()">
-      <h3>Menu 1</h3>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      <div id="tweet" tweetID="624152096539983872"></div>
+    <div id="20150720" class="tab-pane fade" > <!-- onclick="myFunction()" -->
+       <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="20resultsA" ></div>
+       </div>   
+
+       <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="20resultsB" ></div>
+       </div>
     </div>
-    <div id="20150721" class="tab-pane fade" >
-      <h3>Menu 2</h3>
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
       
+    <div id="20150721" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="21resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="21resultsB" ></div>
+       </div>
     </div>
     <div id="20150722" class="tab-pane fade" >
-      
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="22resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="22resultsB" ></div>
+       </div>
     </div>
     <div id="20150723" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="23resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="23resultsB" ></div>
+       </div>
       
     </div>
     <div id="20150724" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="24resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="24resultsB" ></div>
+       </div>
       
     </div>
     <div id="20150725" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="25resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="25resultsB" ></div>
+       </div>
       
     </div>
     <div id="20150726" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="26resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="26resultsB" ></div>
+       </div>
       
     </div>
     <div id="20150727" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="27resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="27resultsB" ></div>
+       </div>
       
     </div>
     <div id="20150728" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="28resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="28resultsB" ></div>
+       </div>
       
     </div>
     <div id="20150729" class="tab-pane fade" >
+      <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
+        <div id="29resultsA" ></div>
+       </div>   
+
+      <div class="col-sm-6" id="right" style="overflow-y:scroll;width:50%;height:100%">
+        <div id="29resultsB" ></div>
+       </div>
       
     </div>
 
     
 
   </div>
-</div>
 
+
+    
+</div> <!-- /container -->
 </body>
 </html>
