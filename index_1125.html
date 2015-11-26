@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Case</title>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+ 
+  #tweet {
+    width: 600px !important;
+  }
+ 
+  #tweet iframe {
+    border: none !important;
+    box-shadow: none !important;
+  }
+ 
+</style>
+
+
+ 
+<!-- <script sync src="https://platform.twitter.com/widgets.js"></script> -->
+<script>
+    twttr = (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0],
+          t = window.twttr || {};
+      if (d.getElementById(id)) return t;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://platform.twitter.com/widgets.js";
+      fjs.parentNode.insertBefore(js, fjs);
+      t._e = [];
+      t.ready = function(f) {
+         t._e.push(f);
+      };
+     return t;
+    }(document, "script", "twitter-wjs"));
+</script>
+<script>
+  window.onload = (function(){
+ 
+    var tweet = document.getElementById("tweet");
+    var id = tweet.getAttribute("tweetID");
+ 
+    twttr.widgets.createTweet(id, tweet, {});
+  });
+ 
+</script>
+<script>
+function myFunction() {
+
+    var node = document.createElement("div");                 // Create a <li> node
+    node.setAttribute("id", "tweet2");
+    node.setAttribute("tweetID","625771227932549120");
+
+    var node2=document.createElement("p");
+    node2.textContent="1438030461";
+    var node3=document.createElement("p");
+    var date = new Date(parseInt("1438030461"+"000"));   
+    var hour = date.getUTCHours();
+    if (hour<12) {
+      hour_p="AM";
+    }
+    else {
+      hour_p="PM";
+    }
+    if (hour>12) {
+      hour=hour-12;
+    }
+    node3.textContent="Pushed time "+hour+":"+date.getUTCMinutes()+" "+hour_p+" - "+date.getUTCDate()+" Jul 2015";  //in milliseconds
+    document.getElementById("20150725").appendChild(node);
+    document.getElementById("20150725").appendChild(node2);
+    document.getElementById("20150725").appendChild(node3);
+
+    twttr.widgets.createTweet(document.getElementById("tweet2").getAttribute("tweetID"), document.getElementById("tweet2"), {});
+}
+</script>
+
+<body>
+
+<div class="container">
+  <h2>Dynamic Tabs</h2>
+  <button onclick="myFunction()">Click me</button>
+  <button onclick="myFunction2()">Refresh</button>
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#preference">Preference</a></li>
+    <li><a data-toggle="tab" href="#20150720">July 20</a></li>
+    <li><a data-toggle="tab" href="#20150721">July 21</a></li>
+    <li><a data-toggle="tab" href="#20150722">July 22</a></li>
+    <li><a data-toggle="tab" href="#20150723">July 23</a></li>
+    <li><a data-toggle="tab" href="#20150724">July 24</a></li>
+    <li><a data-toggle="tab" href="#20150725">July 25</a></li>
+    <li><a data-toggle="tab" href="#20150726">July 26</a></li>
+    <li><a data-toggle="tab" href="#20150727">July 27</a></li>
+    <li><a data-toggle="tab" href="#20150728">July 28</a></li>
+    <li><a data-toggle="tab" href="#20150729">July 29</a></li>
+
+  </ul>
+  <div class="tab-content">
+
+    <div id="preference" class="tab-pane">
+      <h3>HOME</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </div>
+    <div id="20150720" class="tab-pane fade" onclick="myFunction()">
+      <h3>Menu 1</h3>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <div id="tweet" tweetID="624152096539983872"></div>
+    </div>
+    <div id="20150721" class="tab-pane fade" >
+      <h3>Menu 2</h3>
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+      
+    </div>
+    <div id="20150722" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150723" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150724" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150725" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150726" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150727" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150728" class="tab-pane fade" >
+      
+    </div>
+    <div id="20150729" class="tab-pane fade" >
+      
+    </div>
+
+    
+
+  </div>
+</div>
+
+</body>
+</html>
