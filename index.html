@@ -24,6 +24,58 @@
     }(document, "script", "twitter-wjs"));
   </script>
   <script>
+      function submitPreference(){
+        var topic = document.getElementById("topic").value;
+
+        topic=topic.split(' ');
+        topic=topic[0];
+        var runtag1 = document.getElementById("runtag1").value;
+        var runtag2 = document.getElementById("runtag2").value;
+        var data = {}
+        data.topic = topic;
+        data.runtag1 = runtag1;
+        data.runtag2 = runtag2;
+        // console.log(data);
+
+        if($("input[type='radio'].radioBtnClass").is(':checked')) {
+          var preference = $("input[type='radio'].radioBtnClass:checked").val();
+          data.preference=preference;
+          // alert(data);
+        }
+        // console.log(data);
+        $.ajax({
+      type: 'POST',
+      url: 'http://www.sunny-song.com/abtest/search.php',
+      crossDomain: true,
+      data: JSON.stringify(data),
+      dataType: 'json',
+      success: function(responseData, textStatus, jqXHR) {
+        var value = responseData.someKey;
+      },
+      error: function (responseData, textStatus, errorThrown) {
+          alert('POST failed.');
+      }
+      });
+      alert("Thanks!");
+
+
+
+      }
+
+  </script>
+  <script>
+  function openTopic(){
+    var topic = document.getElementById("topic").value;
+    topic=topic.split(' ');
+    topic=topic[0];
+    var left = (screen.width/3);
+    var top = (screen.height/3);
+    return window.open('topics/'+topic+'.html', 'name', 'width=450,height=450,top='+top+', left='+left); 
+
+
+    popupWindow = window.open('index_1125.html','name','width=300,height=300');
+    alert(topic);
+  }
   function submitQuery(){
     for (var i = 20; i <= 29;  i++) {
       $("#"+i+"resultsA").html("")
@@ -91,13 +143,13 @@
 <body style="height:100%">
 <div class="container" style="height:100%">
 
-  <div class="page-header" style="height:12%">
+  <div class="page-header" style="height:13%">
     <h4 id="this_is_h1"> </h4>
       <!-- <input type="text" id="topic_display"></input> -->
-    <form class="form-inline" action="JavaScript:submitQuery()">
+    <form class="form-inline col-sm-8" action="JavaScript:submitQuery()">
     
       <div class="form-group">
-        <label for="sel1">System A</label>
+        <label>Run A</label>
         <select class="form-control selectpicker show-tick" name='runtag1' id="runtag1" >
           <option value="CLIP-A-5.0-0.5">CLIP-A-5.0-0.5</option>
           <option value="CLIP-A-5.0-0.6">CLIP-A-5.0-0.6</option>
@@ -195,7 +247,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="sel1">System B</label>
+        <label>Run B</label>
         <select class="form-control selectpicker show-tick" name='runtag2' id="runtag2" >
           <option value="CLIP-A-5.0-0.5">CLIP-A-5.0-0.5</option>
           <option value="CLIP-A-5.0-0.6">CLIP-A-5.0-0.6</option>
@@ -235,10 +287,26 @@
           <option value="UWCMBP1">UWCMBP1</option>
           <option value="UWCMBP2">UWCMBP2</option>
         </select>
-      </div>
-      
-      <input type="submit" class="btn btn-default" value="Run query" />
+      </div>      
+      <input type="submit" class="btn btn-success" value="Run" />
+      <a class="btn btn-info" type="button" href ="javascript:openTopic()" target="popup">Topic Spec</a>
     </form>
+    <form class="form-inline col-sm-4" action="JavaScript:submitPreference()">
+      Better one?&nbsp;
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="A">A
+      </label>
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="neither">Neither
+      </label>
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="B">B
+      </label>
+      &nbsp;
+      
+      <input type="submit" class="btn btn-primary" value="Submit" />
+    </form>
+
   </div>
  
  <ul class="nav nav-tabs">
@@ -257,9 +325,12 @@
   </ul>
   <div class="tab-content">
 
-    <div id="description" class="tab-pane">
-      <h3>HOME</h3>
-      <p>Say sth you want :)</p>
+    <div id="description" class="tab-pane fade in active">
+      <h4>README</h4>
+      <p>In order to allow embeded tweets display the correct UTC/GMT time (due to API limitation), please ensure System Preferences -> Date and Time setting as follows:</p>
+      <p>Timezone: Greenwich Mean Time </p>
+      <p>Closest City: Jamestown - St. Helena (IMPORTANT). </p>
+      <p>(Some other GMT places in the northern hemisphere may still not work, as Daylight Saving Time causes problem)</p>
     </div>
     <div id="20150720" class="tab-pane fade" > <!-- onclick="myFunction()" -->
        <div class="col-sm-6" id="left" style="overflow-y:scroll;width:50%;height:100%"> 
